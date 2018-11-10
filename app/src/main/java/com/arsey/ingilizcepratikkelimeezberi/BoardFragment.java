@@ -1,22 +1,30 @@
 package com.arsey.ingilizcepratikkelimeezberi;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,7 +42,10 @@ public class BoardFragment extends Fragment {
     private LinearLayout containerLeft,containerRight;
     //private final int buttonColor = getResources().getColor(R.color.colorButton);
     private int x,y;
+    private int silinenButtonSayisi = 0;
     private static final int DURATION = 400;
+    private static final int DURATION_KAYBOL = 300;
+    private static final int DURATION_ADD_BUTTON = 700;
     private Button selectButtonLeft = null;
     private Button selectButtonRight = null;
     private boolean buttonClickEnable = true;
@@ -48,7 +59,7 @@ public class BoardFragment extends Fragment {
         }
     };
 
-    private View.OnClickListener onClickListenerLeft = new View.OnClickListener() {
+    private View.OnClickListener clickListenerLeft = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             if(!buttonClickEnable)
@@ -56,7 +67,7 @@ public class BoardFragment extends Fragment {
 
             if(selectButtonRight !=null){
                 //eşleştirme kontrolü
-                Toast.makeText(context, "eşleştirme", Toast.LENGTH_SHORT).show();
+
                 selectButtonLeft = (Button) v;
                 buttonClickEnable = false;
 
@@ -76,13 +87,9 @@ public class BoardFragment extends Fragment {
         }
     };
 
-    private void revealEffectRed() {
-    }
 
-    private void revealEffect() {
-    }
 
-    private View.OnClickListener onClickListenerRight = new View.OnClickListener() {
+    private View.OnClickListener clickListenerRight = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
 
@@ -91,7 +98,16 @@ public class BoardFragment extends Fragment {
 
             if(selectButtonLeft !=null){
                 //eşleştirme olacağı zaman
-                Toast.makeText(context, "eşleştirme", Toast.LENGTH_SHORT).show();
+
+
+                selectButtonRight = (Button) v;
+                buttonClickEnable = false;
+
+                if(selectButtonLeft.getId()==selectButtonRight.getId()){
+                    revealEffect();
+                }else{
+                    revealEffectRed();
+                }
             }else{
                 if(selectButtonRight != null)
                     selectButtonRight.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorButton)));
@@ -165,7 +181,7 @@ public class BoardFragment extends Fragment {
             button.setId(modelListLeft.get(0).getId());
             button.setText(modelListLeft.get(0).getKelime());
             button.setOnTouchListener(touchlistener);
-            button.setOnClickListener(onClickListenerLeft);
+            button.setOnClickListener(clickListenerLeft);
             containerLeft.addView(button);
 
             modelListLeft.remove(0);
@@ -183,7 +199,7 @@ public class BoardFragment extends Fragment {
             button.setId(modelListRight.get(0).getId());
             button.setText(modelListRight.get(0).getAnlam());
             button.setOnTouchListener(touchlistener);
-            button.setOnClickListener(onClickListenerRight);
+            button.setOnClickListener(clickListenerRight);
             containerRight.addView(button);
 
             modelListRight.remove(0);
@@ -208,6 +224,147 @@ public class BoardFragment extends Fragment {
             animator.setDuration(DURATION + i*70);
             animator.start();
         }
+
+    }
+    private void revealEffectRed() {
+        int finalRadius = Math.max(widthButton,heightButton);
+        Animator animRight = ViewAnimationUtils.createCircularReveal(selectButtonRight, x, y, 0, finalRadius);
+        Animator animLeft = ViewAnimationUtils.createCircularReveal(selectButtonLeft, x, y, 0, finalRadius);
+
+        selectButtonLeft.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorButtonRed)));
+        selectButtonRight.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorButtonRed)));
+
+        animLeft.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                selectButtonLeft.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorButton)));
+                selectButtonRight.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorButton)));
+
+                selectButtonLeft = null;
+                selectButtonRight = null;
+                buttonClickEnable = true;
+            }
+
+        });
+        animLeft.setDuration(DURATION);
+        animRight.setDuration(DURATION);
+        animLeft.start();
+        animRight.start();
+
+
+    }
+
+    private void revealEffect() {
+        int finalRadius = Math.max(widthButton,heightButton);
+        Animator animRight = ViewAnimationUtils.createCircularReveal(selectButtonRight, x, y, 0, finalRadius);
+        Animator animLeft = ViewAnimationUtils.createCircularReveal(selectButtonLeft, x, y, 0, finalRadius);
+
+        selectButtonLeft.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorButtonBlue)));
+        selectButtonRight.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorButtonBlue)));
+
+        animLeft.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                
+                kaybol();
+            }
+
+        });
+        animLeft.setDuration(DURATION);
+        animRight.setDuration(DURATION);
+        animLeft.start();
+        animRight.start();
+
+    }
+
+    private void kaybol() {
+        ObjectAnimator animatorLeft = ObjectAnimator.ofFloat(selectButtonLeft,"TranslationX",0,-widthButton*1.5f);
+        ObjectAnimator animatorRight = ObjectAnimator.ofFloat(selectButtonRight,"TranslationX",0,widthButton*1.5f);
+
+        AnimatorSet set = new AnimatorSet();
+        set.playTogether(animatorLeft,animatorRight);
+        set.setDuration(DURATION_KAYBOL);
+        set.setInterpolator(new LinearInterpolator());
+        set.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+
+                selectButtonLeft.setVisibility(View.GONE);
+                selectButtonRight.setVisibility(View.GONE);
+                selectButtonRight = null;
+                selectButtonLeft = null;
+
+                buttonClickEnable = true;
+                silinenButtonSayisi++;
+
+
+
+                if(modelListLeft.size()==0 && modelListRight.size()==0){
+                        //eklenecek buton kalmadığında
+                    if(silinenButtonSayisi==11){
+
+                        Dialog dialog = new Dialog(context);
+                        LayoutInflater layoutInflater = LayoutInflater.from(context);
+                        CardView view = (CardView) layoutInflater.inflate(R.layout.dialog, null);
+                        dialog.setContentView(view);
+                        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                        dialog.show();
+
+                    }
+
+                }else{
+                    addButton();
+                }
+
+
+
+            }
+        });
+        set.start();
+    }
+
+    private void addButton() {
+
+        Button button = new Button(context);
+        button.setWidth(widthButton);
+        button.setHeight(heightButton);
+        button.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+        button.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorButton)));
+        button.setAllCaps(false);
+        button.setTextSize(heightButton / 7);
+        button.setId(modelListLeft.get(0).getId());
+        button.setText(modelListLeft.get(0).getKelime());
+        button.setOnTouchListener(touchlistener);
+        button.setOnClickListener(clickListenerLeft);
+        containerLeft.addView(button, 0);
+        modelListLeft.remove(0);
+        ObjectAnimator animatorLeft = ObjectAnimator.ofFloat(button, "TranslationX", -widthButton * 1.5f, 0);
+        animatorLeft.setInterpolator(new AccelerateDecelerateInterpolator());
+        animatorLeft.setDuration(DURATION_ADD_BUTTON);
+        animatorLeft.start();
+
+
+        Button buttonR = new Button(context);
+        buttonR.setWidth(widthButton);
+        buttonR.setHeight(heightButton);
+        buttonR.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+        buttonR.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorButton)));
+        buttonR.setAllCaps(false);
+        buttonR.setTextSize(heightButton / 7);
+        buttonR.setId(modelListRight.get(0).getId());
+        buttonR.setText(modelListRight.get(0).getAnlam());
+        buttonR.setOnTouchListener(touchlistener);
+        buttonR.setOnClickListener(clickListenerRight);
+        containerRight.addView(buttonR, 0);
+        modelListRight.remove(0);
+        ObjectAnimator animatorRight = ObjectAnimator.ofFloat(buttonR, "TranslationX", widthButton * 1.5f, 0);
+        animatorRight.setInterpolator(new AccelerateDecelerateInterpolator());
+        animatorRight.setDuration(DURATION_ADD_BUTTON);
+        animatorRight.start();
+
 
     }
 }
