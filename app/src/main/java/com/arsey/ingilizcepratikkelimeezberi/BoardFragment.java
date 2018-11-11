@@ -25,6 +25,7 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,6 +50,8 @@ public class BoardFragment extends Fragment {
     private Button selectButtonLeft = null;
     private Button selectButtonRight = null;
     private boolean buttonClickEnable = true;
+    private int puan = 100;
+    private Button button;
 
     private View.OnTouchListener touchlistener = new View.OnTouchListener() {
         @Override
@@ -233,7 +236,18 @@ public class BoardFragment extends Fragment {
 
         selectButtonLeft.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorButtonRed)));
         selectButtonRight.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorButtonRed)));
+        puan = puan-10;
+        Toast.makeText(context, "Puanınız: " + puan , Toast.LENGTH_SHORT).show();
+        if(puan==0){
 
+            Dialog dialog = new Dialog(context,R.style.CustomDialog);
+            LayoutInflater layoutInflater = LayoutInflater.from(context);
+            CardView view = (CardView) layoutInflater.inflate(R.layout.finish_dialog, null);
+            dialog.setContentView(view);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            dialog.show();
+
+        }
         animLeft.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
@@ -306,7 +320,7 @@ public class BoardFragment extends Fragment {
                         //eklenecek buton kalmadığında
                     if(silinenButtonSayisi==11){
 
-                        Dialog dialog = new Dialog(context);
+                        Dialog dialog = new Dialog(context,R.style.CustomDialog);
                         LayoutInflater layoutInflater = LayoutInflater.from(context);
                         CardView view = (CardView) layoutInflater.inflate(R.layout.dialog, null);
                         dialog.setContentView(view);
@@ -367,4 +381,5 @@ public class BoardFragment extends Fragment {
 
 
     }
+
 }

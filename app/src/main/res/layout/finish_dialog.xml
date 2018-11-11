@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardBackgroundColor="#cf0e12"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="10dp"
+    app:contentPadding="20dp">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_autorenew_black_24dp"
+            android:layout_gravity="center_horizontal"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#fafafa"
+            android:text="Oyun Bitti! Tekrar Dene..."
+            android:textSize="35sp"
+            android:gravity="center"
+            android:padding="10dp"/>
+
+        <Button
+            android:id="@+id/basla"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorButton"
+            android:text="Başla"
+            android:textColor="@android:color/background_dark"
+            android:textSize="24sp"
+            android:textStyle="normal" />
+
+    </LinearLayout>
+
+</android.support.v7.widget.CardView>
